@@ -10,7 +10,11 @@ function App() {
   const [language, setLanguage] = useState("");
   const [editIndex, setEditIndex] = useState(null);
 
+  const [search, setSearch] = useState("");
+
+  // ======================
   // FETCH DATA
+  // ======================
   const fetchData = () => {
     fetch("http://localhost:8080/api/records")
       .then(res => res.json())
@@ -28,7 +32,26 @@ function App() {
     fetchStats();
   }, []);
 
-  // ADD
+  // ======================
+  // ⭐ DEBOUNCE SEARCH
+  // ======================
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      if (search) {
+        fetch(`http://localhost:8080/api/records/search?q=${search}`)
+          .then(res => res.json())
+          .then(data => setData(data));
+      } else {
+        fetchData();
+      }
+    }, 500);
+
+    return () => clearTimeout(delay);
+  }, [search]);
+
+  // ======================
+  // CRUD
+  // ======================
   const handleAdd = () => {
     fetch("http://localhost:8080/api/records", {
       method: "POST",
@@ -42,7 +65,6 @@ function App() {
     });
   };
 
-  // DELETE
   const handleDelete = (index) => {
     fetch(`http://localhost:8080/api/records/${index}`, {
       method: "DELETE"
@@ -52,14 +74,12 @@ function App() {
     });
   };
 
-  // EDIT
   const handleEdit = (index, item) => {
     setEditIndex(index);
     setTitle(item.title);
     setLanguage(item.language);
   };
 
-  // UPDATE
   const handleUpdate = () => {
     fetch(`http://localhost:8080/api/records/${editIndex}`, {
       method: "PUT",
@@ -81,22 +101,21 @@ function App() {
 
   return (
     <div className="container">
-      
       <h1>Multi-Language Support Engine</h1>
-      <h2>Day 6 — Dashboard 🚀</h2>
+      <h2>Day 7 — Search & Filter 🚀</h2>
 
       {/* KPI CARDS */}
       <div className="cards">
-  <div className="card">
-    <h3>Total</h3>
-    <p>{stats.total}</p>
-  </div>
+        <div className="card">
+          <h3>Total</h3>
+          <p>{stats.total}</p>
+        </div>
 
-  <div className="card">
-    <h3>English</h3>
-    <p>{stats.english}</p>
-  </div>
-</div>
+        <div className="card">
+          <h3>English</h3>
+          <p>{stats.english}</p>
+        </div>
+      </div>
 
       {/* CHART */}
       <div className="chart">
@@ -107,6 +126,33 @@ function App() {
           <Bar dataKey="value" fill="#4F46E5" />
         </BarChart>
       </div>
+
+      {/* ⭐ SEARCH */}
+      <input
+        placeholder="Search title..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <br /><br />
+
+      {/* ⭐ FILTER */}
+      <select
+        onChange={(e) => {
+          const lang = e.target.value;
+          if (!lang) {
+            fetchData();
+          } else {
+            fetch(`http://localhost:8080/api/records/filter?lang=${lang}`)
+              .then(res => res.json())
+              .then(data => setData(data));
+          }
+        }}
+      >
+        <option value="">All</option>
+        <option value="English">English</option>
+        <option value="Spanish">Spanish</option>
+      </select>
 
       {/* FORM */}
       <div className="form">
@@ -140,7 +186,6 @@ function App() {
           </div>
         ))}
       </div>
-
     </div>
   );
 }
