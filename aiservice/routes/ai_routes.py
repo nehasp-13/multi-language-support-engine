@@ -1,28 +1,59 @@
 from flask import Blueprint, request, jsonify
-from services.ai_service import generate_description, generate_recommendations
+from datetime import datetime
 
-ai_bp = Blueprint("ai", __name__)
+# ✅ Blueprint with prefix
+ai_bp = Blueprint("ai", __name__, url_prefix="/ai")
 
-# Describe API
+
+# =========================
+# DAY 3 - DESCRIBE API
+# =========================
 @ai_bp.route("/describe", methods=["POST"])
 def describe():
     data = request.get_json()
-    text = data.get("text", "")
 
-    result = generate_description(text)
+    if not data or "text" not in data:
+        return jsonify({"error": "text required"}), 400
+
+    text = data["text"]
 
     return jsonify({
-        "result": result,
-        "generated_at": "now"
+        "generated_at": "now",
+        "result": f"Generated Description: {text}"
     })
 
 
-# ✅ Recommend API (ADD THIS)
+# =========================
+# DAY 4 - RECOMMEND API
+# =========================
 @ai_bp.route("/recommend", methods=["POST"])
 def recommend():
     data = request.get_json()
-    text = data.get("text", "")
 
-    result = generate_recommendations(text)
+    if not data or "text" not in data:
+        return jsonify({"error": "text required"}), 400
 
-    return jsonify(result)
+    text = data["text"]
+
+    recommendations = [
+        {
+            "action_type": "Improve",
+            "description": f"Improve clarity of: {text}",
+            "priority": 1
+        },
+        {
+            "action_type": "Expand",
+            "description": f"Add more details to: {text}",
+            "priority": 2
+        },
+        {
+            "action_type": "Summarize",
+            "description": f"Summarize the content: {text}",
+            "priority": 3
+        }
+    ]
+
+    return jsonify({
+        "generated_at": datetime.now().isoformat(),
+        "recommendations": recommendations
+    })

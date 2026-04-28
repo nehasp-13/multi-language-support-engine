@@ -1,22 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask
+from routes.ai_routes import ai_bp   # import your routes
 
 app = Flask(__name__)
 
-@app.route('/')
+# ✅ Register Blueprint (VERY IMPORTANT)
+app.register_blueprint(ai_bp)
+
+# ✅ Optional: Home route (for testing server)
+@app.route("/")
 def home():
-    return "AI Service Running"
+    return {"message": "AI Service is running"}
 
-@app.route('/describe', methods=['POST'])
-def describe():
-    data = request.get_json()
-    text = data.get("text")
+# ✅ Debug: Print all routes (helps avoid 404 issues)
+print("Available routes:")
+print(app.url_map)
 
-    result = f"Generated Description: {text}"
-
-    return jsonify({
-        "result": result,
-        "generated_at": "now"
-    })
-
-if __name__ == '__main__':
-    app.run(port=5000)
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5000, debug=True)
