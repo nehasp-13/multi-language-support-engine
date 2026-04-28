@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Deadline Alert</title>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color: #D9534F;">⚠ Deadline Alert</h2>
+    <p>Hello <strong th:text="${userName}">User</strong>,</p>
+    <p th:text="${message}">Message here</p>
+    <p>Your deadline: <strong th:text="${deadline}">Date</strong></p>
+    <p>Please complete your pending translations before the deadline.</p>
+    <br/>
+    <p style="color: #888; font-size: 12px;">
+        This is an automated alert. Please do not reply to this email.
+    </p>
+</body>
+</html>
