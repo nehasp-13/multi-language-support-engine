@@ -12,36 +12,32 @@ public class AiServiceClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // 🔹 GET DESCRIPTION
     @Async
     public CompletableFuture<String> getDescription(String text) {
         String url = "http://127.0.0.1:5000/ai/describe";
 
-        Map<String, String> request = new HashMap<>();
-        request.put("text", text);
+        Map<String, String> req = new HashMap<>();
+        req.put("text", text);
 
         try {
-            Map response = restTemplate.postForObject(url, request, Map.class);
-            return CompletableFuture.completedFuture((String) response.get("result"));
+            Map res = restTemplate.postForObject(url, req, Map.class);
+            return CompletableFuture.completedFuture((String) res.get("result"));
         } catch (Exception e) {
-            e.printStackTrace();
             return CompletableFuture.completedFuture("AI Service Not Available");
         }
     }
 
-    // 🔹 GET RECOMMENDATIONS
     @Async
     public CompletableFuture<List<Map<String, Object>>> getRecommendations(String text) {
         String url = "http://127.0.0.1:5000/ai/recommend";
 
-        Map<String, String> request = new HashMap<>();
-        request.put("text", text);
+        Map<String, String> req = new HashMap<>();
+        req.put("text", text);
 
         try {
-            List response = restTemplate.postForObject(url, request, List.class);
-            return CompletableFuture.completedFuture(response);
+            Map res = restTemplate.postForObject(url, req, Map.class);
+            return CompletableFuture.completedFuture((List<Map<String, Object>>) res.get("recommendations"));
         } catch (Exception e) {
-            e.printStackTrace();
             return CompletableFuture.completedFuture(new ArrayList<>());
         }
     }

@@ -4,3 +4,4 @@ com\internship\tool\entity\RecordData.class
 com\internship\tool\Application.class
 com\internship\tool\controller\RecordController.class
 com\internship\tool\repository\RecordRepository.class
+com\internship\tool\service\CacheService.class

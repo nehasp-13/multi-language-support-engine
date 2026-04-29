@@ -4,8 +4,7 @@ import com.internship.tool.entity.RecordData;
 import com.internship.tool.service.RecordService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -17,20 +16,23 @@ public class RecordController {
         this.service = service;
     }
 
-    // 🔹 DAY 5
     @PostMapping("/create")
-    public RecordData create(@RequestBody RecordData record) {
-        return service.create(record);
+    public RecordData create(@RequestBody RecordData r) {
+        return service.create(r);
     }
 
     @GetMapping("/all")
-    public List<RecordData> getAll() {
+    public List<RecordData> all() {
         return service.getAll();
     }
 
-    // 🔹 DAY 6
+    @GetMapping("/health")
+    public Map<String, Object> health() {
+        return service.health();
+    }
+
     @PostMapping("/generate-report")
-    public Map<String, Object> generateReport(@RequestBody RecordData record) {
-        return service.generateReport(record.getInputText());
+    public Map<String, Object> report(@RequestBody RecordData r) {
+        return service.generateReport(r.getInputText());
     }
 }
