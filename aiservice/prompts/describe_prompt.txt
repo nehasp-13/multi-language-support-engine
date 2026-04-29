@@ -1,0 +1,8 @@
+You are an AI assistant.
+
+Your task is to generate a clear and meaningful description for the given text.
+
+Input:
+{text}
+
+Output:

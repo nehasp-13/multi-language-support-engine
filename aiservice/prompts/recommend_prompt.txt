@@ -1,0 +1,12 @@
+You are an AI assistant.
+
+Your task is to suggest useful actions for the given text.
+
+Input:
+{text}
+
+Output:
+Provide 3 recommendations with:
+- action_type
+- description
+- priority
