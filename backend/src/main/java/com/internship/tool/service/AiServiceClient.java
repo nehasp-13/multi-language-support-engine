@@ -1,23 +1,48 @@
 package com.internship.tool.service;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+
+@Component
 public class AiServiceClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String callDescribe(String text) {
+    // 🔹 GET DESCRIPTION
+    @Async
+    public CompletableFuture<String> getDescription(String text) {
+        String url = "http://127.0.0.1:5000/ai/describe";
 
-        String url = "http://localhost:5000/describe";
+        Map<String, String> request = new HashMap<>();
+        request.put("text", text);
 
-        Map<String, String> request = Map.of("text", text);
+        try {
+            Map response = restTemplate.postForObject(url, request, Map.class);
+            return CompletableFuture.completedFuture((String) response.get("result"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CompletableFuture.completedFuture("AI Service Not Available");
+        }
+    }
 
-        Map response = restTemplate.postForObject(url, request, Map.class);
+    // 🔹 GET RECOMMENDATIONS
+    @Async
+    public CompletableFuture<List<Map<String, Object>>> getRecommendations(String text) {
+        String url = "http://127.0.0.1:5000/ai/recommend";
 
-        return response.get("result").toString();
+        Map<String, String> request = new HashMap<>();
+        request.put("text", text);
+
+        try {
+            List response = restTemplate.postForObject(url, request, List.class);
+            return CompletableFuture.completedFuture(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CompletableFuture.completedFuture(new ArrayList<>());
+        }
     }
 }

@@ -3,46 +3,66 @@ package com.internship.tool.service;
 import com.internship.tool.entity.RecordData;
 import com.internship.tool.repository.RecordRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class RecordService {
 
     private final RecordRepository repo;
+    private final AiServiceClient aiServiceClient;
 
-    public RecordService(RecordRepository repo) {
+    public RecordService(RecordRepository repo, AiServiceClient aiServiceClient) {
         this.repo = repo;
+        this.aiServiceClient = aiServiceClient;
     }
 
-    public RecordData save(RecordData record) {
+    // 🔹 DAY 5 CREATE (ASYNC)
+    public RecordData create(RecordData record) {
+        record.setResult("Processing...");
+        RecordData saved = repo.save(record);
 
-        // 🔥 Call AI Service
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://127.0.0.1:5000/describe";
+        aiServiceClient.getDescription(record.getInputText())
+                .thenAccept(result -> {
+                    saved.setResult(result);
+                    repo.save(saved);
+                });
 
-        Map<String, String> request = new HashMap<>();
-        request.put("text", record.getInputText());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
-
-        ResponseEntity<Map> response =
-                restTemplate.postForEntity(url, entity, Map.class);
-
-        String aiResult = (String) response.getBody().get("result");
-
-        // set AI result
-        record.setResult(aiResult);
-
-        return repo.save(record);
+        return saved;
     }
 
     public List<RecordData> getAll() {
         return repo.findAll();
+    }
+
+    // 🔹 DAY 6 GENERATE REPORT
+    public Map<String, Object> generateReport(String inputText) {
+
+        Map<String, Object> report = new HashMap<>();
+
+        try {
+            String description = aiServiceClient.getDescription(inputText).get();
+            List<Map<String, Object>> recommendations =
+                    aiServiceClient.getRecommendations(inputText).get();
+
+            report.put("title", "AI Generated Report");
+            report.put("summary", "Summary for: " + inputText);
+            report.put("overview", description);
+
+            report.put("key_items", List.of(
+                    "Input analyzed",
+                    "AI description generated",
+                    "Recommendations created"
+            ));
+
+            report.put("recommendations", recommendations);
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            report.put("error", "Failed to generate report");
+        }
+
+        return report;
     }
 }
