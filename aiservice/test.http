@@ -1,6 +1,6 @@
-POST http://127.0.0.1:5000/ai/recommend
+POST http://127.0.0.1:5000/ai/describe
 Content-Type: application/json
 
 {
-  "input": "AI in business"
+  "input": "AI in healthcare"
 }

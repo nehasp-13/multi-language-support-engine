@@ -25,6 +25,16 @@ Content-Type: application/json
   "input": "E-commerce analytics"
 }
 
+POST http://127.0.0.1:5000/ai/describe
+Content-Type: application/json
+{
+  "input": "Machine learning"
+}
+
+POST http://127.0.0.1:5000/ai/generate-report
+{
+  "input": "Business analytics"
+}
 
 ###
 
